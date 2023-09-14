@@ -1,0 +1,510 @@
+﻿<html>
+<head>
+	<meta charset="UTF-8">
+	<title>TxtReader by ET</title>
+	<style>
+		body {
+			background: #f4f4f4;
+		    margin: 0px;
+		    padding: 0px;
+		    min-height: 100vh;
+		    overflow: hidden;
+		    -webkit-font-smoothing: antialiased;
+		    position: relative;
+		}
+		.bgblack{
+			background: #333333;
+			color: #ffffff;
+		}
+		.bgwhite{
+			background: #f4f4f4;
+			color: #000000;
+		}
+		.button {
+			display: inline-block;
+		    min-width: 10px;
+		    text-align: center;
+		    line-height: 30px;
+		    padding: 0 5px;
+		    color: #fff;
+		    background: #4386f5;
+		    border-radius: 3px;
+		    cursor: pointer;
+		    margin-left: 5px;
+		    margin-top: 10px;
+		    margin-bottom: 6px;
+		    width: 50px;
+		    margin-right: 15px;
+		    float: right;
+		}
+		#txt-name {
+			width: 100%;
+			height: 50px;
+			border-bottom: 1px solid #e5e5e5;
+			text-align: center;
+			font-size: xx-large;
+			padding: 0px;
+			line-height: 50px;
+		}
+		.menu {
+			width: 100%;
+			height: 40px;
+			border-bottom: 1px solid #e5e5e5;
+			text-align: center;
+			font-size: xx-large;
+			padding: 0px;
+			line-height: 40px;
+		}
+		#menu-list{
+			overflow: scroll;
+			height: calc(100% - 80px);
+		}
+		#txt-content{
+			height: calc(100% - 50px);
+			overflow-y: scroll;
+			padding: 0px 30px 0px;
+			line-height: 40px;
+		}
+		.e-menu{
+			float: left;
+		    line-height: 30px;
+		    width: 100%;
+		    text-align: center;
+		    text-decoration: none;
+		    color: black;
+		    background-color: #e9e9e9;
+		    margin-bottom: 1px;
+		    font-size: 14px;
+		}
+		.e-menu.active{
+			background-color: #bbbbbb;
+		}
+		.bgmenublack{
+			background-color: #333333;
+			color: #ffffff;
+		}
+		.bgmenuwhite{
+			background-color: #e9e9e9;
+			color: #000000;
+		}		
+		#shade{
+		    width: 100%;
+		    height: 100%;
+		    z-index: 998;
+		    background: #000;
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    opacity: 0.8;
+		    text-align: center;
+			padding-top: 200px;
+			color: white;
+		}
+		#time{
+			width: 150px;
+			height: 20px;
+			position: fixed;
+			background-color: black;
+			opacity: 0.25;
+			border-radius: 25px;
+			top:100px;
+			left: auto;
+			right: 100px;
+			bottom: auto;
+			font-size: 16;
+		    color: white;
+			text-align: center;
+		}
+		#scrollTip{
+			width: 150px;
+			height: 20px;
+			position: fixed;
+			background-color: black;
+			opacity: 0.25;
+			border-radius: 25px;
+			top:125px;
+			left: auto;
+			right: 100px;
+			bottom: auto;
+			font-size: 16;
+		    color: white;
+			text-align: center;
+			display:none;
+		}
+		#hide{
+		    width: 100%;
+		    height: 100%;
+		    z-index: 998;
+		    background: #000;
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    text-align: center;
+			padding-top: 200px;
+		}
+		#hint{
+		    width: 30%;
+		    height: 240px;
+		    z-index: 997;
+		    background: #fff;
+		    position: fixed;
+		    left: 35%;
+		    top: calc(50% - 120px);
+		    text-align: center;
+		}		
+		#logo{
+		    float: left;
+		    margin: 0 auto;
+		    text-align: center;
+		    line-height: 50px;
+		    font-size: 30px;
+		    padding-left: 12px;
+		    font-family: fantasy;
+	        color: darkblue;
+		}
+	</style>
+</head>
+<body>
+	<div style=" width: 100%;height: 100%;">
+		<div style="float: left;width: calc(20% - 1px);height: 100%;border-right: 1px solid #e5e5e5;">
+			<div style="width: 100%;height: 50px; border-bottom: 1px solid #e5e5e5;">
+				<div id="logo">TxtReader</div>
+				<a class="button" id="show-menu">收起</a>
+				<a class="button" id="show-hint">帮助</a>
+				<a class="button" style="display: none;" id="open-file">O</a>
+				<input type="file" id="files" style="display: none" onchange="fileImport();" accept=".txt">
+				<a class="button" style="display: none;" id="change-color" flag=1>深</a>
+				<a class="button" style="display: none;" id="enlarge">+</a>
+				<a class="button" style="display: none;" id="reduce">-</a>
+			</div>
+			<div class="menu">
+				章节列表
+			</div>
+			<div id="menu-list" ></div>
+		</div>
+		<div style="float: left;width: calc(80% - 1px);height: 100%;">
+			<div id="txt-name">小说阅读器</div>
+			<div id="txt-content" style="font-size: 16;">欢迎使用在线小说阅读器，快捷键Alt+o打开小说，目前仅支持txt格式</div>
+		</div>
+	</div>
+	<div id="shade" style="display: none;">读取中，请稍后。。。</div>
+	<div id="time"></div>
+	<div id="scrollTip"></div>
+	<div id="hide" style="display: none;"></div>
+	<div id="hint" style="display: none;">
+		<h3>快捷键提示</h3>
+		<table style="margin:0 auto;">
+			<tr><td>Alt+o</td><td>打开文件</td></tr>
+			<tr><td>Alt+b</td><td>切换深浅色模式</td></tr>
+			<tr><td>Alt+h</td><td>隐藏/显示界面</td></tr>
+			<tr><td>Alt+[</td><td>缩小字号</td></tr>
+			<tr><td>Alt+]</td><td>放大字号</td></tr>
+			<tr><td>s</td><td>自动向下翻页</td></tr>
+			<tr><td>w</td><td>自动向上翻页</td></tr>
+		</table>
+	</div>
+
+</body>
+<script type="text/javascript">
+	onload = function(){
+		// storage config init
+		if(localStorage.getItem('lastContent')){
+			showContent(localStorage.getItem('lastContent'),localStorage.getItem('lastName'));
+			if(document.getElementsByName(localStorage.getItem('lastAnchor'))[0]){
+				document.getElementsByName(localStorage.getItem('lastAnchor'))[0].click();
+			}
+
+		}
+		if(localStorage.getItem('lastColor')){
+			document.getElementById('change-color').setAttribute('flag',localStorage.getItem('lastColor'));
+			changeColor(localStorage.getItem('lastColor'))
+		}
+		if(localStorage.getItem('lastPx')){
+			document.getElementById('txt-content').style.fontSize=localStorage.getItem('lastPx');
+			storeMenu()
+		}
+		setInterval(function(){
+						var now = new Date()
+			 document.getElementById('time').innerHTML=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+now.getMinutes()+':'+now.getSeconds();
+		},500)
+	}
+	document.getElementById('open-file').addEventListener('click',function(){
+		document.getElementById('files').click();
+	});
+	document.getElementById('change-color').addEventListener('click',function(){
+			changeColor(this.getAttribute('flag'))
+		// document.getElementsByClassName("e-menu").classList.remove('bgmenuwhite');
+	});
+	// document.getElementById('show-hint').addEventListener('click',function(){
+	// 	if(document.getElementById('hint').style.display=='none'){
+	// 			document.getElementById('hint').style.display='block';
+	// 		}else{
+	// 			document.getElementById('hint').style.display='none';
+	// 		}
+	// });	
+	document.getElementById('show-hint').onmouseover = function(){
+		document.getElementById('hint').style.display='block';
+	}
+	document.getElementById('show-hint').onmouseout = function(){
+		document.getElementById('hint').style.display='none';
+	}	
+	if(document.addEventListener){
+    		document.addEventListener('DOMMouseScroll',scrollFunc,false); // W3C
+	}
+	window.onmousewheel=document.onmousewheel=scrollFunc; 
+	var pause=false;
+	var timer;
+	function scrollFunc(){
+		pause=true;	
+		if (timer) {
+      			clearTimeout(timer)
+    		}
+    		timer = setTimeout(() => {
+      			// 300ms后判定为滑动结束
+			pause=false;
+    		}, 300)
+	}
+	document.onkeyup = function(event){
+		if(event.keyCode==38 || event.keyCode==40){
+			pause=false;
+		}
+	}
+	var autoFlag1 = false;
+	var autoFlag2 = false;
+	var s1;
+	var s2;
+	var scrollStep=parseInt(localStorage.getItem('scrollStep')?localStorage.getItem('scrollStep'):1);
+	document.onkeydown = function(event){
+	　　if(event.keyCode==83){
+				autoFlag2=false;
+				clearInterval(s2)
+				if(autoFlag1==false){
+					autoFlag1=true;
+		　　　　s1 = setInterval(function(){
+						// console.log(111);
+						if(pause==false) document.getElementById('txt-content').scrollTop+=scrollStep
+						document.getElementById('scrollTip').style.display='block';
+						document.getElementById('scrollTip').innerHTML='自动滚动 速度：'+scrollStep.toFixed(0)
+					},50)
+
+				}else{
+					autoFlag1=false;
+					// console.log(222);
+					clearInterval(s1)
+					document.getElementById('scrollTip').style.display='none';
+				}
+	　　}else if(event.keyCode==87){
+				autoFlag1=false;
+				clearInterval(s1)		
+				if(autoFlag2==false){
+					autoFlag2=true;
+		　　　　s2 = setInterval(function(){
+						// console.log(111);
+						if(pause==false) document.getElementById('txt-content').scrollTop-=scrollStep
+						document.getElementById('scrollTip').style.display='block';
+						document.getElementById('scrollTip').innerHTML='自动滚动 速度：'+scrollStep.toFixed(0)
+					},50)
+
+				}else{
+					autoFlag2=false;
+					// console.log(222);
+					clearInterval(s2)
+					document.getElementById('scrollTip').style.display='none';
+				}				
+		}else if(event.altKey && event.keyCode==72){
+			if(document.getElementById('hide').style.display=='none'){
+				document.getElementById('hide').style.display='block';
+			}else{
+				document.getElementById('hide').style.display='none';
+			}
+		}else if(event.altKey && event.keyCode==79){
+			document.getElementById('files').click();
+		}else if(event.altKey && event.keyCode==66){
+			document.getElementById('change-color').click();
+		}else if(event.altKey && event.keyCode==219){
+			document.getElementById('reduce').click()
+		}else if(event.altKey && event.keyCode==221){
+			document.getElementById('enlarge').click()
+		}else if(event.altKey && event.keyCode==73){
+			// document.getElementById('show-hint').click()
+		}else if(event.keyCode==38 || event.keyCode==40){
+			pause=true;
+		}else if(event.keyCode==187 && (autoFlag1||autoFlag2)){
+			scrollStep+=1;
+			localStorage.setItem('scrollStep', scrollStep);
+		}else if(event.keyCode==189 && (autoFlag1||autoFlag2)){
+			if(scrollStep>0) scrollStep-=1;
+			localStorage.setItem('scrollStep', scrollStep);
+		}
+	};
+
+
+	function changeColor(flag){
+		if(flag==1){
+			document.getElementById('change-color').innerHTML='浅'
+			document.getElementById('change-color').setAttribute('flag',2);
+			document.body.classList.add('bgblack');
+			document.body.classList.remove('bgwhite');
+			for (const v of document.getElementsByClassName("e-menu")){
+				v.classList.add('bgmenublack');
+				v.classList.remove('bgmenuwhite');
+			}
+        	localStorage.setItem('lastColor', 1);
+		}else{
+			document.getElementById('change-color').innerHTML='深'
+			document.getElementById('change-color').setAttribute('flag',1);
+			document.body.classList.add('bgwhite');
+			document.body.classList.remove('bgblack');
+			for (const v of document.getElementsByClassName("e-menu")){
+				v.classList.add('bgmenuwhite');
+				v.classList.remove('bgmenublack');
+			}
+        	localStorage.setItem('lastColor', 2);
+		}
+	}
+	
+	window.onresize=function(){
+		storeMenu();
+	}
+	document.getElementById('enlarge').addEventListener('click',function(){
+		var thisDom = document.getElementById('txt-content');
+		thisDom.style.fontSize=Math.min(parseInt(thisDom.style.fontSize)+1,30)+'px';
+        storeMenu()
+    	localStorage.setItem('lastPx', thisDom.style.fontSize);
+	});	
+	document.getElementById('reduce').addEventListener('click',function(){
+		var thisDom = document.getElementById('txt-content');
+		thisDom.style.fontSize=Math.max(parseInt(thisDom.style.fontSize)-1,10)+'px';
+        storeMenu()
+    	localStorage.setItem('lastPx', thisDom.style.fontSize);
+	});	
+	var menuArr=[];
+	function fileImport() {
+		document.getElementById('shade').style.display='block';
+            //获取读取我文件的File对象
+            var selectedFile = document.getElementById('files').files[0];
+            var name = selectedFile.name; //读取选中文件的文件名
+            var size = selectedFile.size; //读取选中文件的大小
+            
+            // console.log("文件名:" + name + "大小:" + size);
+            var reader = new FileReader(); //这是核心,读取操作就是由它完成.
+            reader.readAsText(selectedFile,"GB2312"); //读取文件的内容,也可以读取文件的URL
+            reader.onload = function() {
+            	name = name + "&nbsp;&nbsp;&nbsp;大小:" + (size/1024).toFixed(2)+'KB';
+            	localStorage.setItem('lastName', name);
+
+            	if(this.result.match(/�/g)){
+            		reader.readAsText(selectedFile);
+            		reader.onload = function() {
+						document.getElementById('shade').style.display='none';
+            			localStorage.setItem('lastContent', this.result);
+			            showContent(this.result,name)
+            		}
+            	}else{
+					document.getElementById('shade').style.display='none';
+	            	localStorage.setItem('lastContent', this.result);
+		            showContent(this.result,name)
+            	}
+            }
+    }
+    function showContent(content,name){
+    	
+    	document.getElementById('txt-name').innerHTML=name;
+		result = content.replaceAll(/(?:^|\n)/g,"</br>");
+        reg = new RegExp(/第(\d+|[一二三四五六七八九十]+)章(.*)/, 'g');
+        menus = result.match(reg)
+        var i=0;
+        document.getElementById('menu-list').innerHTML = "";
+        if(!menus){
+        	reg3 = new RegExp(/章节目录.*/,'g');
+	        menus = result.match(reg3)
+        }
+        if(!menus){
+			reg3 = new RegExp(/卷(\d+|[一二三四五六七八九十]+)(.*){1,10}/, 'g');
+	        menus = result.match(reg3)
+        }
+        reg2 = new RegExp(/楔子/,'g');
+        firstMenu = result.match(reg2)
+        if(firstMenu&&menus){
+        	menus.unshift(firstMenu[0]);
+        }
+        if(menus){
+            for (const menu of menus) {
+            	var anchor = 'anchor-'+i;
+            	result = result.replace(menu,'<a id="'+anchor+'">'+menu+'</a>')
+            // console.log(menu)
+            	var menuDom=document.createElement('a');
+            	menuDom.className='e-menu';
+            	menuDom.setAttribute('href',"#");
+            	menuDom.setAttribute('name',anchor);
+            	menuDom.setAttribute('to',anchor);
+				menuDom.innerHTML=menu;
+            	document.getElementById('menu-list').appendChild(menuDom);
+            	i++;
+            }
+        }
+        // console.log(menus)
+        document.getElementById('txt-content').innerHTML=result;
+        if(localStorage.getItem('lastColor')) changeColor(localStorage.getItem('lastColor'))
+    	document.getElementById('txt-content').scrollTop = 0;
+        //当读取完成后回调这个函数,然后此时文件的内容存储到了result中,直接操作即可
+        storeMenu()
+    }
+    function storeMenu(){
+		 var emenus = document.getElementsByClassName("e-menu")
+        if(emenus) {
+        	var j=0;
+        	for(const v of emenus){
+        		if(document.getElementById(v.getAttribute('to'))){
+        			menuArr[j] = document.getElementById(v.getAttribute('to')).offsetTop
+					v.addEventListener('click',function(){
+						var last = document.getElementsByClassName('active')
+
+						if(last.length>0){
+							last[0].classList.remove('active')
+						}
+						v.classList.add('active');
+						document.getElementById(v.getAttribute('to')).scrollIntoView();
+						localStorage.setItem('lastAnchor',v.getAttribute('to'));
+
+						return false;
+					});
+				}else{
+					v.remove()
+					menuArr[j] = menuArr[j-1]
+				}
+				j++;
+            }
+        }    	
+    }
+    document.getElementById('txt-content').onscroll = function() {
+    // console.log(menuArr)
+	  //为了保证兼容性，这里取两个值，哪个有值取哪一个
+	  //scrollTop就是触发滚轮事件时滚轮的高度
+	  
+	  var scrollTop = document.getElementById('txt-content').scrollTop || document.body.scrollTop;
+    // console.log(scrollTop)
+	  for(let i = 0;i<menuArr.length;i++){
+	  	if(menuArr[i]<(scrollTop+200) && ( menuArr[i+1]==undefined ||(scrollTop+200)<menuArr[i+1]) ){
+			var last = document.getElementsByClassName('active')
+			if(last.length>0){
+				last[0].classList.remove('active')
+			}
+			if(document.getElementsByName('anchor-'+i)[0])document.getElementsByName('anchor-'+i)[0].classList.add('active');
+			localStorage.setItem('lastAnchor','anchor-'+i);
+	  		break;
+	  	}
+	  }
+	  // console.log("滚动距离" + scrollTop);
+	}
+	function  readFile(filename){
+		var  fso =  new  ActiveXObject( "Scripting.FileSystemObject" );
+		var  f = fso.OpenTextFile(filename,1);
+		var  s =  "" ;
+		while  (!f.AtEndOfStream)
+			s += f.ReadLine()+ "\n" ;
+		f.Close();
+		return  s;
+	}
+</script>
+</html>
